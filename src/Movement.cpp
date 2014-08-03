@@ -96,6 +96,7 @@ int Movement::getAmountOfSteps(float distance, float footStepSize)
 }
 ///}}} 
 
+
 /**
  * tells the robot to rotate in a circle with a radius.useful for rotating around the ball
  *
@@ -108,7 +109,7 @@ void Movement::rotateWithRadius(float theta, float radius)
     std::vector<std::string> startLeg;
     std::vector<std::string> otherLeg;
 
-    //for now radius is 0
+    
     if(theta < 0) //turn right
     {
         startLeg = RIGHT_LEG;
@@ -122,6 +123,9 @@ void Movement::rotateWithRadius(float theta, float radius)
         otherLeg = RIGHT_LEG;
         theta = theta * DEG2RAD;
     }
+
+
+    //for now radius is 0
 
     if(radius < 50) //in mm
     {
@@ -248,8 +252,9 @@ void Movement::moveHeadAndSearch(int searchForThis)
 void Movement::alignBody()
 ///{{{
 {
+    //get the current angle of the head relative to the body
     currentHeadYaw = motionProxyProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
-
+    //
     rotateWithRadius(currentHeadYaw, 0);
 
     motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_MIDDLE, 1.0);
@@ -402,7 +407,8 @@ void Movement::takePicUntilSeen(int mode)
             }
         }
     }
-
+    // TODO finish when the kicking is working
+    ///{{{
     else if(mode == SEARCH_FOR_GOAL)
     { 
         while(seen == false)
@@ -428,6 +434,7 @@ void Movement::takePicUntilSeen(int mode)
             }
         }
     }
+    ///}}}
 }
 ///}}}
 

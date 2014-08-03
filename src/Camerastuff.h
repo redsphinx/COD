@@ -11,18 +11,19 @@ class Camerastuff
 {
 
     private: 
-        
+///{{{        
         AL::ALVideoDeviceProxy cameraProxy;
         cv::Mat src = cv::Mat(cv::Size(SRC_WIDTH, SRC_HEIGHT), CV_8UC3);
         const std::string cameraClientName;
         AL::ALValue alSrc;
         bool isUnsubscribed;
-
+///}}}
 
     public:
-        
+///{{{  
         cv::Mat getSrc();
 
         unsubscribeFromProxy();
 
 };
+///}}}

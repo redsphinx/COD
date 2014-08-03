@@ -9,7 +9,7 @@ class Movement
 {
 
     private: 
-
+///{{{
         FindBall ball; //object of class FindBall
         FindGoal goal; //object of class FindGoal
         float relativeGoalAngle; //the angle of the goal relative to the robot's head, seen from a top-down view
@@ -36,10 +36,10 @@ class Movement
         std::vector<std::string> LEFT_LEG;
         std::vector<std::string> RIGHT_LEG;
         std::vector<std::string> KICK_LEG;
-
+///}}}
 
     public:
-
+///{{{
         //constructor
         Movement();
 
@@ -146,3 +146,4 @@ class Movement
         void finalize();
 
 };
+///}}}

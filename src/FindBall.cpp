@@ -7,9 +7,10 @@
 
 //constructor
 FindBall::FindBall()
+///{{{
 {
 } 
-
+///}}}
 
 
 /**
