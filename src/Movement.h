@@ -4,12 +4,17 @@
 #include "FindGoal.h"
 #include <alproxies/almotionproxy.h>
 #include <alvision/alvisiondefinitions.h>
+#include <alvalue/alvalue.h>
+#include <alproxies/alrobotpostureproxy.h>
 
 class Movement
 {
 
     private: 
 ///{{{
+        AL::ALMotionProxy motionProxy;
+        AL::ALRobotPostureProxy postureProxy;
+
         FindBall ball; //object of class FindBall
         FindGoal goal; //object of class FindGoal
         float relativeGoalAngle; //the angle of the goal relative to the robot's head, seen from a top-down view
@@ -23,12 +28,11 @@ class Movement
         float currentHeadPitch; //current position of the head pitch (also aldebaran)
         float turnedHeadAngleSoFar; //how much in total (clockwise neg, anticlock pos) the head has turned since the start
         float turnedBodyAngleSoFar; //how much in total (cockwise, neg, anticlock pos) the body has turned since the start
-        AL::ALMotionProxy motionProxy;
         const AL::ALValue HEAD_YAW_JOINT_NAME = AL::ALValue::array("HeadYaw");
         const AL::ALValue HEAD_PITCH_JOINT_NAME = AL::ALValue::array("HeadPitch");
         bool topCamIsSet;
         bool botCamIsSet;
-        float thetaUnit = 10; // how much the robot turns at once in degrees
+        float THETA_UNIT = 10; // how much the robot turns at once in degrees
         const AL::ALValue HEAD_PITCH_TOP_CAM = AL::ALValue::array(0.6);
         const AL::ALValue HEAD_PITCH_BOT_CAM = AL::ALValue::array(0.4);
         const AL::ALValue HEAD_PITCH_BOT_CAM_CLOSE = AL::ALValue::array(1.0); //use for ball positionning

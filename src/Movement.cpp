@@ -6,19 +6,20 @@
 Movement::Movement()
 ///{{{
 {
-    motionProxyProxy(ROBOT_IP, ROBOT_PORT);
+    motionProxy(ROBOT_IP, ROBOT_PORT);
     AL::ALValue stiffness = 1.0f;
-    setMotionConfig(AL::ALValues::array(AL::ALValues::array("MaxStepX",0.08),
-                AL::ALValues::array("MaxStepY", 0.160),
-                AL::ALValues::array("MaxStepTheta", 0.524),
-                AL::ALValues::array("MaxStepFrequency", 1.),
-                AL::ALValues::array("StepHeight", 0.040),
-                AL::ALValues::array("TorsoWx", 0.122),
-                AL::ALValues::array("TorsoWy", 0.122)
+    setMotionConfig(AL::ALValue::array(AL::ALValue::array("MaxStepX",0.08),
+                AL::ALValue::array("MaxStepY", 0.160),
+                AL::ALValue::array("MaxStepTheta", 0.524),
+                AL::ALValue::array("MaxStepFrequency", 1.),
+                AL::ALValue::array("StepHeight", 0.040),
+                AL::ALValue::array("TorsoWx", 0.122),
+                AL::ALValue::array("TorsoWy", 0.122)
                 ));
     FRACTION_MAX_SPEED.push_back(1.0f);
     LEFT_LEG.push_back("LLeg");
     RIGHT_LEG.push_back("RLeg");
+    postureProxy(ROBOT_IP, ROBOT_PORT);
 }
 ///}}}
 
@@ -43,16 +44,16 @@ bool Movement::locateThisObject(int searchForThis)
             return false;
     }
 
-    else if(searchForThis == SEARCH_FOR_GOAL)
-    {
-        distanceFromGoal = goal.finalize(); //TODO make finalize in findgoal return the distance from goal
-        if(distanceFromGoal > 0)
-        {
-            return true;
-        }
-        else 
-            return false;
-    }
+    //else if(searchForThis == SEARCH_FOR_GOAL)
+    //{
+        //distanceFromGoal = goal.finalize(); //TODO make finalize in findgoal return the distance from goal
+        //if(distanceFromGoal > 0)
+        //{
+            //return true;
+        //}
+        //else 
+            //return false;
+    //}
 }
 ///}}}
 
@@ -69,7 +70,7 @@ int Movement::getThetaAmountOfSteps(float theta, float radius)
 { 
     if(radius < 50)
     {
-        int steps = std::ceil(std::abs(theta) / thetaUnit);
+        int steps = std::ceil(std::abs(theta) / THETA_UNIT);
         return steps;
     }
     else
@@ -129,7 +130,7 @@ void Movement::rotateWithRadius(float theta, float radius)
 
     if(radius < 50) //in mm
     {
-        int brokerTaskId = motionProxyProxy.moveInit();
+        int brokerTaskId = motionProxy.moveInit();
         AL::ALValue footSteps = AL::ALValue::array(0, 0, theta);
         clearExisting = false;
         int steps = getThetaAmountOfSteps(theta, 0);
@@ -138,12 +139,12 @@ void Movement::rotateWithRadius(float theta, float radius)
         {
             if(i % 2 == 0)
             {
-                motionProxyProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
             }
 
             else
             {
-                motionProxyProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
 
             }
         }
@@ -177,7 +178,7 @@ void Movement::moveHeadAndSearch(int searchForThis)
 
             topCamIsSet = ALVisionExtractor::setActiveCamera(AL::kTopCamera);
             //set the head pitch to the correct angle for the top cam
-            motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
+            motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
 
 
             objectFound = locateThisObject(searchForThis); //try to locate object with top cam
@@ -186,47 +187,47 @@ void Movement::moveHeadAndSearch(int searchForThis)
             {
 
                 botCamIsSet = ALVisionExtractor::setActiveCamera(AL::kBottomCamera);
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_BOT_CAM, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_BOT_CAM, 1.0);
 
                 objectFound = locateThisObject(searchForThis); //try to locate object with bot cam
 
 
                 if(locateThisObject == false) //if object still isnt located then turn the head
                 {
-                    currentHeadYaw = motionProxyProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
+                    currentHeadYaw = motionProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
 
                     if(currentHeadYaw == HEAD_YAW_MIDDLE && headChangedDirection == false)
                     {
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
                     }
 
                     else if(currentHeadYaw > HEAD_YAW_MIDDLE && currentHeadYaw < HEAD_YAW_RIGHT_MAX && headChangedDirection == false)
                     {
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_RIGHT, 1.0);
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_RIGHT, 1.0);
                     }
 
                     else if(currentHeadYaw >= HEAD_YAW_RIGHT_MAX && headChangedDirection == false)
                     {
                         headChangedDirection == true;
                         headDirectionChangeCntr++;
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0)
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0)
                     }
 
                     else if(currentHeadYaw == HEAD_YAW_MIDDLE && headChangedDirection == true)
                     {
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
                     }
 
                     else if(currentHeadYaw < HEAD_YAW_MIDDLE && currentHeadYaw > HEAD_YAW_LEFT_MAX && headChangedDirection == true)
                     {
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_THRESH_LEFT, 1.0);
                     }
 
                     else if(currentHeadYaw <= HEAD_YAW_LEFT_MAX && headChangedDirection == true)
                     {
                         headChangedDirection = false;
                         headDirectionChangeCntr++;
-                        motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0);
+                        motionProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0);
                     }
                 }
             }
@@ -237,8 +238,8 @@ void Movement::moveHeadAndSearch(int searchForThis)
 
             headChangedDirection = false;
             headDirectionChangeCntr = 0;
-            motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0);
-            motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
+            motionProxy.setAngles(HEAD_YAW_JOINT_NAME, 0, 1.0);
+            motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
             rotateWithRadius(-BODY_ANGLE_THRESH, 0); //minus to indicate clockwise rotation
         }
     }
@@ -253,11 +254,11 @@ void Movement::alignBody()
 ///{{{
 {
     //get the current angle of the head relative to the body
-    currentHeadYaw = motionProxyProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
+    currentHeadYaw = motionProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
     //
     rotateWithRadius(currentHeadYaw, 0);
 
-    motionProxyProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_MIDDLE, 1.0);
+    motionProxy.setAngles(HEAD_YAW_JOINT_NAME, HEAD_YAW_MIDDLE, 1.0);
 
 }
 ///}}}
@@ -274,7 +275,7 @@ void Movement::walkDistance(float distanceX, float distanceY)
     //if distance is negative, for x this means backwards, for y this means to the right
 {
     float theta = 0.0f;
-    motionProxyProxy.walkInit();
+    motionProxy.walkInit();
 
     std::vector<std::string> startLeg;
     std::vector<std::string> otherLeg;
@@ -304,13 +305,13 @@ void Movement::walkDistance(float distanceX, float distanceY)
         {
             if(amountOfSteps % 2 == 0)
             {
-                motionProxyProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
                 lastMovedLeg = startLeg;
 
             }
             else
             {
-                motionProxyProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
                 lastMovedLeg = otherLeg;
 
             }
@@ -351,13 +352,13 @@ void Movement::walkDistance(float distanceX, float distanceY)
         {
             if(amountOfSteps % 2 == 0)
             {
-                motionProxyProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(startLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
                 lastMovedLeg = startLeg;
 
             }
             else
             {
-                motionProxyProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
+                motionProxy.setFootStepsWithSpeed(otherLeg, footSteps, FRACTION_MAX_SPEED, clearExisting);
                 lastMovedLeg = otherLeg;
 
             }
@@ -376,6 +377,10 @@ void Movement::walkDistance(float distanceX, float distanceY)
 void Movement::takePicUntilSeen(int mode) 
 ///{{{
 {
+    //make sure robot is standing upright
+    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED); //TODO check if head pitch/yaw are unafected by this
+
+
     bool seen = false;
     std::pair<cv::Vec4i, float> finalizeResults;
     cv::Vec4i bbStorage;
@@ -384,7 +389,9 @@ void Movement::takePicUntilSeen(int mode)
     {
         while(seen == false)
         {
+            //gets information from the FindBall class to see if the ball has been located
             finalizeResults = ball.finalize();
+            //the Vec4i vector with the coordinates of the ball if found. if not found it will contain a (0, 0, 0, 0) vector
             bbStorage = finalizeResults.first;
             if(bbStorage =! ZERO_BB)
             {
@@ -395,14 +402,14 @@ void Movement::takePicUntilSeen(int mode)
             if(seen == false)
             {
 
-                currentHeadPitch = motionProxyProxy.getAngles(HEAD_PITCH_JOINT_NAME, true); 
+                currentHeadPitch = motionProxy.getAngles(HEAD_PITCH_JOINT_NAME, true); 
                 float tmpPitch = currentHeadPitch;
-                float fractionValue = 29.5 / tmpPitch*RAD2DEG;
+                float fractionValue = HEAD_PITCH_FRONT_MAX / tmpPitch;
                 //adjust pitch to normal
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, 0, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, 0, FRACTION_MAX_SPEED);
                 //adjust pitch back to how it was
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, fractionValue, 1.0);
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, fractionValue, FRACTION_MAX_SPEED);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, FRACTION_MAX_SPEED);
                 //adjust pitch to tmpPitch
             }
         }
@@ -422,14 +429,14 @@ void Movement::takePicUntilSeen(int mode)
 
             if(seen == false)
             {
-                currentHeadPitch = motionProxyProxy.getAngles(HEAD_PITCH_JOINT_NAME, true); 
+                currentHeadPitch = motionProxy.getAngles(HEAD_PITCH_JOINT_NAME, true); 
                 float tmpPitch = currentHeadPitch;
                 float fractionValue = 29.5 / tmpPitch*RAD2DEG;
                 //adjust pitch to normal
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, 0, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, 0, 1.0);
                 //adjust pitch back to how it was
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, fractionValue, 1.0);
-                motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, fractionValue, 1.0);
+                motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_TOP_CAM, 1.0);
                 //adjust pitch to tmpPitch
             }
         }
@@ -592,7 +599,7 @@ void Movement::positionBehindBall()
     std::vector<std::string> leg;
     botCamIsSet = ALVisionExtractor::setActiveCamera(AL::kBottomCamera);
 
-    motionProxyProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_BOT_CAM_CLOSE, 1.0);
+    motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_BOT_CAM_CLOSE, 1.0);
 
     std::vector<std::string> leftLeg;
 
