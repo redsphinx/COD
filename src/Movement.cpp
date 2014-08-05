@@ -456,6 +456,9 @@ void Movement::takePicUntilSeen(int mode)
 void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int modeHorVer, cv::Vec4i bbBall)
 ///{{{
 {
+    //make sure the robot is standing upright
+    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED); //TODO check if head pitch/yaw are unafected by this
+
     bool isInPos = false;
     int bbMiddle;
     int perfectBallPos;
@@ -464,21 +467,16 @@ void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int
     float distanceX = 0;
     float distanceY = 0;
 
-    std::vector<std::string> leftLeg;
-    leftLeg.push_back("LLeg");
-    std::vector<std::string> rightLeg;
-    rightLeg.push_back("RLeg");
-
     if(modeHorVer == ROBOT_MOVE_MODE_HOR) //hor so X
     {
         bbMiddle = (bbBall[0]+bbBall[2]) / 2;
 
-        if(leg == leftLeg)
+        if(leg == LEFT_LEG)
         {
             perfectBallPos = PERFECT_LEFT_BALL_POS_X;
             perfectBallPosBB = PERFECT_LEFT_BALL_POS_BB;
         }
-        else if(leg == rightLeg)
+        else if(leg == RIGHT_LEG)
         {
             perfectBallPos = PERFECT_RIGHT_BALL_POS_X;
             perfectBallPosBB = PERFECT_RIGHT_BALL_POS_BB;
@@ -489,12 +487,12 @@ void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int
     {
         bbMiddle = (bbBall[1]+bbBall[3]) / 2;
 
-        if(leg == leftLeg)
+        if(leg == LEFT_LEG)
         {
             perfectBallPos = PERFECT_LEFT_BALL_POS_Y;
             perfectBallPosBB = PERFECT_LEFT_BALL_POS_BB;
         }
-        else if(leg == rightLeg)
+        else if(leg == RIGHT_LEG)
         {
             perfectBallPos = PERFECT_RIGHT_BALL_POS_Y;
             perfectBallPosBB = PERFECT_RIGHT_BALL_POS_BB;
@@ -520,11 +518,11 @@ void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int
         if(modeHorVer == ROBOT_MOVE_MODE_HOR)
         {
             distanceX = 0;
-            if(leg == rightLeg)
+            if(leg == RIGHT_LEG)
             {
                 distanceY = -distanceToShift;
             }
-            else if(leg == leftLeg)
+            else if(leg == LEFT_LEG)
             {
                 distanceY = distanceToShift;
             }
@@ -557,11 +555,11 @@ void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int
             var1 = 3;
         }
 
-        if(leg == leftLeg)
+        if(leg == LEFT_LEG)
         {
             perfectBallPosBB = PERFECT_LEFT_BALL_POS_BB;
         }
-        else if(leg == rightLeg)
+        else if(leg == RIGHT_LEG)
         {
             perfectBallPosBB = PERFECT_RIGHT_BALL_POS_BB;
         }
@@ -628,9 +626,9 @@ void Movement::positionBehindBall()
         }
         KICK_LEG = leg; //set the private field to the correct foot that is going to kick
 
-        //shift to correct horizontal position, mode == 1
+        //shift to correct horizontal position
         moveRobotToCorrectBallPlacement(KICK_LEG, ROBOT_MOVE_MODE_HOR, bbBall); 
-        //shift to correct vertical position, mode == 2
+        //shift to correct vertical position
         moveRobotToCorrectBallPlacement(KICK_LEG, ROBOT_MOVE_MODE_VER, bbBall); 
 
     }
@@ -646,7 +644,7 @@ void Movement::kickTheBall()
 {
     if (KICK_LEG == RIGHT_LEG)
     {
-        AL::ALValue names = AL::ALValue::array("RShoulderRoll", "RShoulderPitch", "LShoulderRoll", "LShoulderPitch", "RHipRoll", "RHipPitch", "RKneePitch", "RAnklePitch", "RAnkleRoll", "LHipRoll", "LHipPitch",           "LKneePitch", "LAnklePitch", "LAnkleRoll");
+        AL::ALValue names = AL::ALValue::array("RShoulderRoll", "RShoulderPitch", "LShoulderRoll", "LShoulderPitch", "RHipRoll", "RHipPitch", "RKneePitch", "RAnklePitch", "RAnkleRoll", "LHipRoll", "LHipPitch", "LKneePitch", "LAnklePitch", "LAnkleRoll");
         AL::ALValue angles = AL::ALValue::array(AL::ALValue::array(-0.3), AL::ALValue::array(0.4), AL::ALValue::array(0.5), AL::ALValue::array(1.0), AL::ALValue::array(0.0), AL::ALValue::array(-0.4, -0.2), AL::ALValue:: array(0.95, 1.5), AL::ALValue::array(-0.55, -1), AL::ALValue::array(0.2), AL::ALValue::array(0.0), AL::ALValue::array(-0.4), AL::ALValue::array(0.95), AL::ALValue::array(-0.55), AL::ALValue::array(0.2));
         AL::ALValue times =  AL::ALValue::array(AL::ALValue::array( 0.5), AL::ALValue::array(0.5), AL::ALValue::array(0.5), AL::ALValue::array(0.5), AL::ALValue::array(0.5), AL::ALValue::array( 0.4,  0.8), AL::ALValue:: array( 0.4, 0.8),  AL::ALValue::array(0.4, 0.8), AL::ALValue::array(0.4), AL::ALValue::array(0.5), AL::ALValue::array( 0.4), AL::ALValue::array( 0.4), AL::ALValue::array( 0.4),  AL::ALValue::array(0.4));
 

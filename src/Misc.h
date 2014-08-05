@@ -1,6 +1,6 @@
 #pragma once
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+//#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <alvalue/alvalue.h>
 
@@ -34,8 +34,8 @@ const int PERFECT_LEFT_BALL_POS_Y = (int)(PERFECT_LEFT_BALL_POS_BB[1]+PERFECT_LE
 const int PERFECT_RIGHT_BALL_POS_X = (int)(PERFECT_RIGHT_BALL_POS_BB[0]+PERFECT_RIGHT_BALL_POS_BB[2]) / 2;
 const int PERFECT_RIGHT_BALL_POS_Y = (int)(PERFECT_RIGHT_BALL_POS_BB[1]+PERFECT_RIGHT_BALL_POS_BB[3]) / 2;
 
-const std::vector<std::string> LEFT_FOOT = ["LLeg"]; //indicates the left foot of the robot
-const std::vector<std::string> RIGHT_FOOT = ["RLeg"]; //indicates the right foot of the robot
+//const std::vector<std::string> LEFT_FOOT = ["LLeg"]; //indicates the left foot of the robot
+//const std::vector<std::string> RIGHT_FOOT = ["RLeg"]; //indicates the right foot of the robot
 const int NO_FOOT = 0; //indicates no foot
 
 const float BALL_RADIUS_MIN = 80/2; //in mm
