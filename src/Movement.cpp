@@ -688,12 +688,8 @@ void Movement::kickTheBall()
 void Movement::finalize()
 ///{{{
 {
-    bool isFound = false;
 
-    while(isFound == false)
-    {
-        isFound = moveHeadAndSearch(SEARCH_FOR_BALL);
-    }
+    moveHeadAndSearch(SEARCH_FOR_BALL);
     alignBody();
     walkDistance();
     positionBehindBall();
