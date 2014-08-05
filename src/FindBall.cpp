@@ -127,12 +127,12 @@ float FindBall::getBlobError(cv::Vec4i bbox, std::vector<cv::Point> blob)
 }
 //}}}
 
+
 /**
  * gets the distance from the NAO to a blob
  * x is the x coordinate for the point you want to calculate the distance to
  * y is the y coordinate for the point you want to calculate the distance to
  */
-//TODO fix some things in movement
 float FindBall::getDistanceToPoint(int x, int y, int camera, float headPitch, float cameraHeight/*, float someAngle*/)
 //{{{
 {
@@ -303,7 +303,7 @@ std::pair<std::vector <std::vector<cv::Point> >, cv::Mat> FindBall::getContours(
     double sigmaY = 0; //Gaussian kernel standard deviation in Y direction
     int borderType = cv::BORDER_DEFAULT; //pixel extrapolation method
     int kernelSize = 1; //Gaussian kernel size. Select a small kernel size for the ball because it is a small object. too much blur will cause it to not be detected when it is far away.
-
+ 
     cv::GaussianBlur(src, blurred, cv::Size(kernelSize, kernelSize), sigmaX, sigmaY, borderType);
 
     //_____Apply Canny using sobel or scharr operator. TODO make scharr operator work
@@ -410,7 +410,7 @@ void FindBall::loadSrc(std::string filename, cv::Mat& src)
 /**
  * temporary method, makes it all come together.
  */
-std::pair<cv::Vec4i, float> FindBall::finalize(headPitch, cameraHeight)
+std::pair<cv::Vec4i, float> FindBall::finalize(float headPitch, float cameraHeight)
 //{{{
 {
     src = camera.getSrc();
