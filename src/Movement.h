@@ -108,6 +108,12 @@ class Movement
         void walkDistance(float distanceX, float distanceY);
 
 
+        /**
+         * makes the robot walk to the ball
+         */
+        void walkToBall();
+
+
         //takes pictures until it sees the ball
         /**
          * takes pictures until the object is seen

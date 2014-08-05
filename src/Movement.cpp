@@ -35,8 +35,8 @@ bool Movement::locateThisObject(int searchForThis)
     if(searchForThis == SEARCH_FOR_BALL)
     {
         std::pair<cv::Vec4i, float> results = ball.finalize();
-        distanceFromBall = results.second; 
-        if(distanceFromBall > 0) 
+        distanceToBall = results.second; 
+        if(distanceToBall > 0) 
         {
             return true;
         }
@@ -46,8 +46,8 @@ bool Movement::locateThisObject(int searchForThis)
 
     //else if(searchForThis == SEARCH_FOR_GOAL)
     //{
-        //distanceFromGoal = goal.finalize(); //TODO make finalize in findgoal return the distance from goal
-        //if(distanceFromGoal > 0)
+        //distanceToGoal = goal.finalize(); //TODO make finalize in findgoal return the distance from goal
+        //if(distanceToGoal > 0)
         //{
             //return true;
         //}
@@ -249,10 +249,12 @@ void Movement::moveHeadAndSearch(int searchForThis)
 
 /**
  * aligns the body with the head
+ * after the robot has seen the ball, the next step is to align it's body to the direction the head is facing
  */
 void Movement::alignBody()
 ///{{{
 {
+
     //get the current angle of the head relative to the body
     currentHeadYaw = motionProxy.getAngles(HEAD_YAW_JOINT_NAME, true); 
     //
@@ -364,6 +366,17 @@ void Movement::walkDistance(float distanceX, float distanceY)
             }
         }
     }
+}
+///}}}
+
+
+/**
+ * makes the robot walk to the ball
+ */
+void Movement::walkToBall()
+///{{{
+{
+    walkDistance(distanceToBall, 0);
 }
 ///}}}
 
@@ -599,8 +612,6 @@ void Movement::positionBehindBall()
 
     motionProxy.setAngles(HEAD_PITCH_JOINT_NAME, HEAD_PITCH_BOT_CAM_CLOSE, 1.0);
 
-    std::vector<std::string> leftLeg;
-
     //assume the robot is standing facing the goal
 
     bool isInPosition = false;
@@ -624,7 +635,8 @@ void Movement::positionBehindBall()
         {
             leg = RIGHT_LEG;
         }
-        KICK_LEG = leg; //set the private field to the correct foot that is going to kick
+
+        KICK_LEG = leg; 
 
         //shift to correct horizontal position
         moveRobotToCorrectBallPlacement(KICK_LEG, ROBOT_MOVE_MODE_HOR, bbBall); 
@@ -691,7 +703,7 @@ void Movement::finalize()
 
     moveHeadAndSearch(SEARCH_FOR_BALL);
     alignBody();
-    walkDistance();
+    walkToBall();
     positionBehindBall();
     kickTheBall();
 }
