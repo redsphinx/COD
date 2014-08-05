@@ -23,6 +23,14 @@ class FindBall
 
     public:
 ///{{{
+        //contstructor
+        FindBall();
+
+
+        //get camera image
+        void getImg();
+
+
         /**
          * returns the bounding box of a blob
          *
@@ -45,10 +53,10 @@ class FindBall
          * gets the distance from the NAO to a blob
          *
          */
-        float getDistanceToPoint(int x, int y, int camera, float headPitch);
+        float getDistanceToPoint(int x, int y, int camera, float headPitch, float cameraHeight);
 
 
-        float getDistanceToBlob(cv::Vec4i bbox);
+        float getDistanceToBlob(cv::Vec4i, float headPitch, float cameraHeight);
 
         /**
          * returns true when the distance and size of the ball make sense
@@ -62,8 +70,7 @@ class FindBall
          * @param foundContours all the found contours
          * @return returns a pair. a vector of Vec4i with coordinates of the bounding box of all possiballs. and the index indicating the detected ball
          */
-        //TODO add distance heuristic
-        std::pair<int, std::vector<cv::Vec4i>> getAllCandidates(std::vector<std::vector<cv::Point>> foundContours);
+        std::pair<int, std::vector<cv::Vec4i>> getAllCandidates(std::vector<std::vector<cv::Point>> foundContours, float headPitch, float cameraHeight);
 
 
         /**
@@ -111,7 +118,7 @@ class FindBall
         /**
          * Makes it all come together.
          */
-        void finalize();
+        void finalize(float headPitch, float cameraHeight);
 
 };
 ///}}}

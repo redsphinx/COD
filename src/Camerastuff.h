@@ -5,6 +5,7 @@
 #include <alvision/alimage.h>
 #include <alvision/alvisiondefinitions.h>
 #include <alvision/alvisionextractor.h>
+#include <alvalue/alvalue.h>
 
 
 class Camerastuff

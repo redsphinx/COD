@@ -399,8 +399,9 @@ void Movement::takePicUntilSeen(int mode)
     {
         while(seen == false)
         {
+            float cameraHeight = ; //TODO
             //gets information from the FindBall class to see if the ball has been located
-            finalizeResults = ball.finalize();
+            finalizeResults = ball.finalize(currentHeadPitch, cameraHeight, someAngle);
             //the Vec4i vector with the coordinates of the ball if found. if not found it will contain a (0, 0, 0, 0) vector
             bbStorage = finalizeResults.first;
             if(bbStorage =! ZERO_BB)

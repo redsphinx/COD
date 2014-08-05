@@ -13,6 +13,15 @@ FindBall::FindBall()
 ///}}}
 
 
+//get camera img
+void FindBall::getImg()
+///{{{
+{
+   src = camera.getSrc();
+}
+///}}}
+
+
 /**
  * returns the bounding box of a blob
  *
@@ -124,9 +133,12 @@ float FindBall::getBlobError(cv::Vec4i bbox, std::vector<cv::Point> blob)
  * y is the y coordinate for the point you want to calculate the distance to
  */
 //TODO fix some things in movement
-float FindBall::getDistanceToPoint(int x, int y, int camera, float headPitch, float cameraHeight, float someAngle)
+float FindBall::getDistanceToPoint(int x, int y, int camera, float headPitch, float cameraHeight/*, float someAngle*/)
 //{{{
 {
+    //I think someAngle is equal to headPitch for now. Not sure. 
+     
+
     float dist = 0;
     //from the bbox, get the point we want to calculate the distance to. this will be the bottom middle coordinate of the bbox
     distanceToBall = 0;
@@ -136,13 +148,13 @@ float FindBall::getDistanceToPoint(int x, int y, int camera, float headPitch, fl
     //std::string names = "HeadPitch"; //do this in Movement
     //bool useSensors = true; //do this is Movement
     //float someAngle = motion.getAngles(names, useSensors); //do this in Movement
-    int otherAngle = someAngle - 0.5 * CAM_FIELD_OF_VIEW_VER; //angle between ground and bottom of image
-    //float cameraHeight = motion.getTransform(camera, 2, true)[11]; //dunno what I'm doing here. was in roel's code //TODO do this in Movement
+    //int otherAngle = someAngle - 0.5 * CAM_FIELD_OF_VIEW_VER; //angle between ground and bottom of image
+    int otherAngle = headPitch - 0.5 * CAM_FIELD_OF_VIEW_VER; //angle between ground and bottom of image
     float x2 = SRC_WIDTH - x; //roel says: rotation counter clockwise
     x2 = x2 - SRC_WIDTH/2; //roel: relative to center of image
     float xAngle = (x2 / (SRC_WIDTH/2)) * (CAM_FIELD_OF_VIEW_VER/2) * DEG2RAD;
     float y2 = SRC_HEIGHT - y;
-    float yAngle = someAngle + (y2/SRC_HEIGHT) * CAM_FIELD_OF_VIEW_VER * DEG2RAD;
+    float yAngle = headPitch + (y2/SRC_HEIGHT) * CAM_FIELD_OF_VIEW_VER * DEG2RAD;
     dist = cameraHeight * std::tan(yAngle) / std::cos(xAngle); 
     dist *= 1000; //from meters to mm
 
@@ -156,13 +168,13 @@ float FindBall::getDistanceToPoint(int x, int y, int camera, float headPitch, fl
  *  
  *  @param[in] bbox the bounding box of a blob
  */
-void FindBall::getDistanceToBlob(cv::Vec4i bbox, float headPitch, float cameraHeight, float someAngle)
+void FindBall::getDistanceToBlob(cv::Vec4i bbox, float headPitch, float cameraHeight)
 //{{{
 {
     int x = (bbox[0]+bbox[2])/2;
     int y = bbox[3];
 
-    distanceToBall = getDistanceToPoint(x, y, headPitch, cameraHeight, someAngle);
+    distanceToBall = getDistanceToPoint(x, y, headPitch, cameraHeight);
 }
 //}}}
 
@@ -201,7 +213,7 @@ bool FindBall::isBlobLogicalBall(cv::Vec4i bbox, int blobDistance)
  * @param foundContours all the found contours
  * @return returns a pair. a vector of Vec4i with coordinates of the bounding box of all possiballs. and the index indicating the detected ball
  */
-std::pair<int, std::vector<cv::Vec4i> > FindBall::getAllCandidates(std::vector <std::vector<cv::Point> > foundContours)
+std::pair<int, std::vector<cv::Vec4i> > FindBall::getAllCandidates(std::vector <std::vector<cv::Point> > foundContours, float headPitch, float cameraHeight)
 //{{{
 {
     std::vector<cv::Point> contour; //a contour in foundContours
@@ -233,8 +245,7 @@ std::pair<int, std::vector<cv::Vec4i> > FindBall::getAllCandidates(std::vector <
 
                     if(blobError <= blobErrorThreshold) //if blobError is below the threshold
                     {
-                        //(cv::Vec4i bbox, float headPitch, float cameraHeight, float someAngle)
-                        getDistanceToBlob();
+                        getDistanceToBlob(bbox, headPitch, cameraHeight);
                         if(isBlobLogicalBall(bbox, blobDistance)) //if the distance to ballsize ratio makes sense
                         {
                             possiballs.push_back(contour); //add contour to the list
@@ -318,14 +329,14 @@ std::pair<std::vector <std::vector<cv::Point> >, cv::Mat> FindBall::getContours(
 
     foundContours = contours;
 
-    cv::Mat drawing = cv::Mat::zeros(src.size(), CV_8UC3);
+    //cv::Mat drawing = cv::Mat::zeros(src.size(), CV_8UC3);
 
-    for( int i = 0; i< contours.size(); i++ )
-    {
-        cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        cv::drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
-        //note that drawing is the destination image
-    }
+    //for( int i = 0; i< contours.size(); i++ )
+    //{
+        //cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+        //cv::drawContours( drawing, contours, i, color, 1, 8, hierarchy, 0, cv::Point() );
+        ////note that drawing is the destination image
+    //}
 
     std::pair<std::vector <std::vector<cv::Point> >, cv::Mat> results = make_pair(foundContours, drawing);
     return results;
@@ -399,7 +410,7 @@ void FindBall::loadSrc(std::string filename, cv::Mat& src)
 /**
  * temporary method, makes it all come together.
  */
-std::pair<cv::Vec4i, float> FindBall::finalize()
+std::pair<cv::Vec4i, float> FindBall::finalize(headPitch, cameraHeight)
 //{{{
 {
     src = camera.getSrc();
@@ -422,16 +433,16 @@ std::pair<cv::Vec4i, float> FindBall::finalize()
     foundContours = contourResults.first;
     contours = contourResults.second;
 
-    std::pair<int, std::vector<cv::Vec4i> > balls = getAllCandidates(foundContours);
+    std::pair<int, std::vector<cv::Vec4i> > balls = getAllCandidates(foundContours, headPitch, cameraHeight);
     std::vector<cv::Vec4i> theBall = balls.second;
     int ind = balls.first;
 
-    drawTheseBlobs(theBall, ind, contours);
+    //drawTheseBlobs(theBall, ind, contours);
 
-    if(foundContours.size() > 0)
-    {
-        cv::imshow("detected contours" + filename, contours);
-    }
+    //if(foundContours.size() > 0)
+    //{
+        //cv::imshow("detected contours" + filename, contours);
+    //}
 
     std::pair<cv::Vec4i, float> results = std::make_pair(ballBoundingBox, distanceToBall);
     return results;
@@ -439,11 +450,11 @@ std::pair<cv::Vec4i, float> FindBall::finalize()
 //}}}
 
 
-int main()
-{
-    FindBall ball;
-    ball.finalize();
+//int main()
+//{
+    //FindBall ball;
+    //ball.finalize();
 
-    cv::waitKey(0);
-    return 0;
-}
+    //cv::waitKey(0);
+    //return 0;
+//}
