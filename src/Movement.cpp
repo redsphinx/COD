@@ -390,9 +390,6 @@ void Movement::walkToBall()
 void Movement::takePicUntilSeen(int mode) 
 ///{{{
 {
-    //make sure robot is standing upright
-    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED); //TODO check if head pitch/yaw are unafected by this
-
 
     bool seen = false;
     std::pair<cv::Vec4i, float> finalizeResults;
@@ -469,8 +466,6 @@ void Movement::takePicUntilSeen(int mode)
 void Movement::moveRobotToCorrectBallPlacement(std::vector<std::string> leg, int modeHorVer, cv::Vec4i bbBall)
 ///{{{
 {
-    //make sure the robot is standing upright
-    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED); //TODO check if head pitch/yaw are unafected by this
 
     bool isInPos = false;
     int bbMiddle;
@@ -700,9 +695,16 @@ void Movement::kickTheBall()
 void Movement::finalize()
 ///{{{
 {
+    
+    //make sure the robot is standing upright
+    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED);
 
     moveHeadAndSearch(SEARCH_FOR_BALL);
     alignBody();
+
+    //make sure the robot is standing upright
+    postureProxy.goToPosture("StandInit", FRACTION_MAX_SPEED);
+
     walkToBall();
     positionBehindBall();
     kickTheBall();
