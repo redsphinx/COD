@@ -11,7 +11,6 @@ class FindBall
     private:
 ///{{{
         const int histSize = 256;
-        //assuming we play on a field that is half the size of a SPL field
         std::string filename = "/home/redsphinx/Projects/BachelorThesis/TestImages9/3-1-headpitch-01";
         //cv::Mat src;
         cv::RNG rng;
