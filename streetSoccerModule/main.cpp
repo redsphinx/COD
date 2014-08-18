@@ -1,12 +1,18 @@
-/*
- * Copyright (c) 2012-2014 Aldebaran Robotics. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the COPYING file.
- */
+#include "Movement.h"
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 
-int main()
+// basics. search for the ball, go to it and kick it.
+void Controlflow::execute1()
 {
-  std::cout << "Hello, world" << std::endl;
-  return 0;
+    Movement move;
+
+    bool ballFound = move.moveHeadAndSearch(SEARCH_FOR_BALL);
+    bool bodyIsAlligned = move.alignBody();
+    //get the distance
+    int distance;
+    move.walkDistance(distance);
+    bool isBehindBall = positionBehindBall();
+    // do another check in case the robot veered off path
+    move.kickTheBall();
 }
