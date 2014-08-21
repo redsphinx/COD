@@ -4,13 +4,97 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <alcommon/albroker.h>
 
 //constructor
-FindBall::FindBall()
+FindBall::FindBall(boost::shared_ptr<AL::ALBroker> broker, const std::string &name) : AL::ALModule(broker, name)
 ///{{{
 {
+    setModuleDescription("module that finds the ball.");
+
+    functionName("getImg", "FindBall", "get camera image");
+    BIND_METHOD(FindBall::getImg);
+
+    functionName("getBoundingBox", "FindBall", "returns the bounding box of a blob");
+    addParam("blob", "a countour with a roundish shape");
+    BIND_METHOD(FindBall::getBoundingBox);
+
+    functionName("getBlobError", "FindBall", "returns the error of a blob");
+    addParam("bbox", "the bounding box of a blob");
+    addParam("blob", "contour with a roundish shape");
+    BIND_METHOD(FindBall::getBlobError);
+
+    functionName("getDistanceToPoint", "FindBall", "gets the distance from a nao to a blob");
+    addParam("x", "");
+    addParam("y", "");
+    addParam("camera", "");
+    addParam("headPitch", "");
+    addParam("cameraHeight", "");
+    BIND_METHOD(FindBall::getDistanceToPoint);
+
+    functionName("getDistanceToBlob", "");
+    addParam("bbox", "");
+    addParam("headPitch", "");
+    addParam("cameraHeight", "");
+    BIND_METHOD(FindBall::getDistanceToBlob);
+
+    functionName("isBlobLogicalBall", "");
+    addParam("bbox", "");
+    addParam("blobDistance", "");
+    BIND_METHOD(FindBall::isBlobLogicalBall);
+
+    functionName("getAllCandidates", "");
+    addParam("foundContours", "");
+    addParam("headPitch", "");
+    addParam("cameraHeight", "");
+    BIND_METHOD(FindBall::getAllCandidates);
+
+    functionName("getContours", "");
+    addParam("src", "");
+    BIND_METHOD(FindBall::getContours);
+
+    functionName("drawThisBlob", "");
+    addParam("ballPoints", "");
+    addParam("img", "");
+    addParam("color", "");
+    BIND_METHOD(FindBall::drawThisBlob);
+
+    functionName("drawTheseBlobs", "");
+    addParam("theBall", "");
+    addParam("ind", "");
+    addParam("contours", "");
+    BIND_METHOD(FindBall::drawTheseBlobs);
+
+    functionName("cvtToAndSplit", "");
+    addParam("src", "");
+    addParam("dst", "");
+    addParam("colorSpace", "");
+    BIND_METHOD(FindBall::cvtToAndSplit);
+
+    functionName("loadSrc", "");
+    addParam("filename", "");
+    addParam("src", "");
+    BIND_METHOD(FindBall::loadSrc);
+
+    functionName("findTheBall", "");
+    addParam("src", "");
+    BIND_METHOD(FindBall::findTheBall);
+
+    functionName("finalize", "")
+    addParam("headPitch", "");
+    addParam("cameraHeight", "");
+    BIND_METHOD(FindBall::finalize);
+
 } 
 ///}}}
+
+
+FindBall::~FindBall();
+
+
+void FindBall::init()
+{
+}
 
 
 //get camera img

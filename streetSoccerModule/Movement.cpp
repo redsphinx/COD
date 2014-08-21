@@ -3,9 +3,69 @@
 
 
 //constructor
-Movement::Movement()
+Movement::Movement(boost::shared_ptr<AL::ALBroker> broker, const std::string &name) : AL::ALModule(broker, name)
 ///{{{
 {
+
+    functionName("moveHeadAndSearch", "");
+    addParam("searchForThis", "");
+    BIND_METHOD(Movement::moveHeadAndSearch);
+
+    functionName("locateThisObject", "");
+    addParam("searchForThis", "");
+    BIND_METHOD(Movement::locateThisObject);
+
+    functionName("getThetaAmountOfSteps", "");
+    addParam("theta", "");
+    addParam("radius", "");
+    BIND_METHOD(Movement::getThetaAmountOfSteps);
+
+    functionName("getAmountOfSteps", "");
+    addParam("distance", "");
+    addParam("footStepSize", "");
+    BIND_METHOD(Movement::getAmountOfSteps);
+
+    functionName("rotateWithRadius", "");
+    addParam("theta", "");
+    addParam("radius", "");
+    BIND_METHOD(Movement::rotateWithRadius);
+
+    functionName("alignBody", "");
+    BIND_METHOD(Movement::alignBody);
+
+    functionName("walkDistance", "");
+    addParam("distanceX", "");
+    addParam("distanceY", "");
+    BIND_METHOD(Movement::walkDistance);
+
+    functionName("walkToBall", "");
+    BIND_METHOD(Movement::walkToBall);
+
+    functionName("takePicUntilSeen", "");
+    addParam("mode", "");
+    BIND_METHOD(Movement::takePicUntilSeen);
+
+    functionName("moveRobotToCorrectBallPlacement", "");
+    addParam("leg", "");
+    addParam("modeHorVer", "");
+    addParam("bbBall", "");
+    BIND_METHOD(Movement::moveRobotToCorrectBallPlacement);
+
+    functionName("getTurnAngle", "");
+    addParam("angleToGoal", "");
+    addParam("angleToBall", "");
+    BIND_METHOD(Movement::getTurnAngle);
+
+    functionName("positionBehindBall", "");
+    BIND_METHOD(Movement::positionBehindBall);
+
+    functionName("kickTheBall", "");
+    BIND_METHOD(Movement::kickTheBall);
+
+    functionName("finalize", "");
+    BIND_METHOD(Movement::finalize);
+
+
     motionProxy(ROBOT_IP, ROBOT_PORT);
     AL::ALValue stiffness = 1.0f;
     setMotionConfig(AL::ALValue::array(AL::ALValue::array("MaxStepX",0.08),
@@ -23,6 +83,10 @@ Movement::Movement()
 }
 ///}}}
 
+Movement::~Movement();
+
+
+void Movement::init();
 /**
  * checks if the specified object has been located
  *

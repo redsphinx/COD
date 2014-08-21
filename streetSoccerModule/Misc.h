@@ -76,7 +76,7 @@ const float CAM_FIELD_OF_VIEW_VER = 47.64; //for both top and bottom cam
 //miscellaneous
 ///{{{
 
-const std::string ROBOT_IP = "192.168.1.68"; //the ip address of the robot
+const std::string ROBOT_IP = "192.168.1.87"; //the ip address of the robot
 int ROBOT_PORT = 9559; //the robot port
 const float PI = 3.14159265358979323846; //the value of the constant pi
 const float DEG2RAD = PI/180; //convert degrees to radians

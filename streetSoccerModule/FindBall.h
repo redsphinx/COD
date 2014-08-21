@@ -4,9 +4,18 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <alcommon/almodule.h>
 
 
-class FindBall 
+namespace AL
+{
+    //this is a forward devlaration of AL:ALBroker which avoids including 
+    //<alcommon/albroker.h> in this header
+    class ALBroker;
+}
+
+
+class FindBall : public AL::ALModule
 {
     private:
 ///{{{
@@ -23,9 +32,15 @@ class FindBall
 
     public:
 ///{{{
-        //contstructor
-        FindBall();
 
+        //contstructor
+        FindBall(boost::shared_ptr<AL::ALBroker> broker, const std::string &name);
+
+
+        virtual ~Findball();
+
+
+        virtual void init();
 
         //get camera image
         void getImg();
@@ -56,7 +71,7 @@ class FindBall
         float getDistanceToPoint(int x, int y, int camera, float headPitch, float cameraHeight);
 
 
-        float getDistanceToBlob(cv::Vec4i, float headPitch, float cameraHeight);
+        float getDistanceToBlob(cv::Vec4i bbox, float headPitch, float cameraHeight);
 
         /**
          * returns true when the distance and size of the ball make sense

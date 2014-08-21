@@ -6,9 +6,22 @@
 #include <alvision/alvisiondefinitions.h>
 #include <alvision/alvisionextractor.h>
 #include <alvalue/alvalue.h>
+#include <alcommon/almodule.h>
 
 
-class Camerastuff
+namespace AL
+{
+    //this is a forward devlaration of AL:ALBroker which avoids including 
+    //<alcommon/albroker.h> in this header
+    class ALBroker;
+}
+
+
+/**
+ * this class inherits AL::ALModule. this allows it to bind methods
+ * and be run as a remote executable withing NAOqi
+ */
+class Camerastuff : public AL::ALModule
 {
 
     private: 
@@ -21,10 +34,21 @@ class Camerastuff
 ///}}}
 
     public:
-///{{{  
+///{{{    
+        
+        Camerastuff(boost::shared_ptr<AL::ALBroker> broker, const std::string &name);
+
+        virtual ~Camerastuff();
+        /**
+         * overloading ALModule::init()
+         * this is called right after the module has been loaded
+         */
+        virtual void init();
+
         cv::Mat getSrc();
 
         unsubscribeFromProxy();
 
 };
-///}}}
+ ///}}}
+

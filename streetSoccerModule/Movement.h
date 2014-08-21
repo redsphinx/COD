@@ -6,8 +6,18 @@
 #include <alvision/alvisiondefinitions.h>
 #include <alvalue/alvalue.h>
 #include <alproxies/alrobotpostureproxy.h>
+#include <alcommon/almodule.h>
 
-class Movement
+
+namespace AL
+{
+    //this is a forward devlaration of AL:ALBroker which avoids including 
+    //<alcommon/albroker.h> in this header
+    class ALBroker;
+}
+
+
+class Movement : public AL::ALModule
 {
 
     private: 
@@ -45,7 +55,13 @@ class Movement
     public:
 ///{{{
         //constructor
-        Movement();
+        Movement(boost::shared_ptr<AL::ALBroker> broker, const std::string &name);
+
+
+        virtual ~Movement();
+
+
+        virtual void init();
 
 
         /**
