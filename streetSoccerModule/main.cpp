@@ -51,7 +51,7 @@ int main()
 
     // Now it's time to load your module with
     // AL::ALModule::createModule<your_module>(<broker_create>, <your_module>);
-    AL::ALModule::createModule<MyModule>(broker, "MyModule");
+    AL::ALModule::createModule<streetSoccerModule>(broker, "streetSoccerModule");
 
     while (true)
         qi::os::sleep(1);

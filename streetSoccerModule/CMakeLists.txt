@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Create a executable named mymodule
-project(mymodule)
+project(streetSoccerModule)
 
 find_package(qibuild)
+find_package(OpenCV REQUIRED)
 
 
 # Create a list of source files
@@ -18,10 +19,10 @@ set(_srcs
     main.cpp)
 
 # with the source file: main.cpp
-qi_create_bin(mymodule ${_srcs})
+qi_create_bin(streetSoccerModule ${_srcs})
 
 # Add a simple test:
 #enable_testing()
 #qi_create_test(test_mymodule "test.cpp")
 
-qi_use_lib(mymodule ALCOMMON ALPROXIES ALVISION OPENCV OPENCV2)
+qi_use_lib(streetSoccerModule ALCOMMON ALPROXIES ALVISION OPENCV OPENCV2)
